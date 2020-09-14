@@ -1,0 +1,1 @@
+Just some code that I have been working on. These are tools for representing a polyhedron efficiently in memory. The user can assign arbitrary data to each part of the polyhedron. I made this as a way to generate a spherical map in a Unity Game I have been developing in my spare time. Since it has been a lot of work, I though I would put it somewhere easy to find.
