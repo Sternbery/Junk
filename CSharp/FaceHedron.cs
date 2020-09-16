@@ -24,6 +24,35 @@ namespace polyhedraV3{
 			edgeData = eds.ToArray();
 			vertexData=vds.ToArray();
 		}
+		public FaceHedron(EdgeHedron<F,E,V> eh){
+			
+			List<Edge> seenedges = new List<Edge>();
+			List<Face> faces = new List<Face>();
+			
+			foreach(Edge edge in eh.Edges){
+				if(seenedges.Contains(edge)) continue;
+				
+				Face face = new Face();
+				int currIndex = edge.N();
+				Edge curr = edge.next(eh);
+				
+				while(curr != edge){
+					seenedges.Add(curr);
+					face.Add(curr.B(),currIndex);
+					
+					currIndex = curr.N();
+					curr = curr.next(eh);
+				}
+				face.Add(curr.B(),currIndex);
+				
+				faces.Add(face);
+			}
+			
+			this.faces = faces.ToArray();
+			this.faceData = eh.FaceData;
+			this.edgeData = eh.EdgeData;
+			this.vertexData=eh.VertexData;
+		}
 		
 		public Face[] Faces{
 			get{
@@ -72,7 +101,15 @@ namespace polyhedraV3{
 				this.vertexData
 			);
 		}
-		
+		public FaceHedron<F,E,O> MapVerts<O>(Func<Face,V,O> v2o){
+			return this.ToEdgeHedron().Invert().ToFaceHedron().MapFaces(v2o).ToEdgeHedron().Invert().ToFaceHedron();
+			// return new FaceHedron<O,E,V>(
+				// this.faces,
+				// this.faceData,
+				// this.edgeData,
+				//this.vertexData.Select(v=>)
+			// );
+		}
 		public FaceHedron<F,E,O> MapVerts<O>(Func<V,O> v2o){
 			return new FaceHedron<F,E,O>(
 				this.faces,
@@ -82,13 +119,18 @@ namespace polyhedraV3{
 			);
 		}
 		
-
+		public FaceHedron<V,E,F> Invert(){
+			return this.ToEdgeHedron().Invert().ToFaceHedron();
+		}
 		
 		public int NumFaces{
 			get{
 				return faces.Length;
 			}
 		}
-
+		
+		public EdgeHedron<F,E,V> ToEdgeHedron(){
+			return new EdgeHedron<F,E,V>(this);
+		} 
 	}
 }

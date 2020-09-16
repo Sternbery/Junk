@@ -59,6 +59,58 @@ namespace polyhedraV3{
 			vertexData = vds.ToArray();
 			edgeData = eds.ToArray();
 		}
+		public EdgeHedron(FaceHedron<F,E,V> fh){
+			List<Edge> pes = new  List<Edge>();
+			
+			//for each face f look at the vertices that connect to it.
+			for(int f=0; f<fh.NumFaces; f++){
+				
+				Face face = fh.Faces[f];
+				
+				int first = -1;
+				int last = -1;
+				
+				//for each vertex
+				for(int v=0;v<face.Count(); v++){
+					int curr = pes.Count;
+					Edge pe = new Edge();
+					if(v==0) first = curr;
+					
+					pe.l = f;
+					pe.b = face[v].Item1;
+					pe.f= face[v==face.Count()-1?0:v+1].Item1;
+					pe.p = last;
+					
+					pe.data_val = face[v].Item2;
+					
+					if(last!=-1) pes[last].n=curr;                
+					
+					last=curr;
+					
+					pes.Add(pe);
+				}
+				
+				pes[last].n = first;
+				pes[first].p = last;
+				
+			}
+			
+			
+			
+			matchPartials(pes);
+			
+			
+			foreach(Edge e in pes){
+				e.cw= pes[e.n].rev;
+				e.ccw= pes[e.rev].p;
+			}
+			
+			
+			edges = pes.ToArray();
+			faceData = fh.FaceData;
+			vertexData = fh.VertexData;
+			edgeData = fh.EdgeData;
+		}
 		
 		public EdgeHedron<V,E,F> Invert(){
 			return new EdgeHedron<V,E,F>(
@@ -69,6 +121,9 @@ namespace polyhedraV3{
 					this.edgeData,
 					this.faceData
 				);
+		}
+		public FaceHedron<F,E,V> ToFaceHedron(){
+			return new FaceHedron<F,E,V>(this);
 		}
 		
 		public static void matchPartials(List<Edge> mypes){
