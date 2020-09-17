@@ -8,27 +8,27 @@ namespace polyhedraV3{
 	public class Face{
 		
 		private int data;
-		private Tuple<int,int>[] sides = new Tuple<int,int>[0];
+		private Tuple<int,int, int>[] sides = new Tuple<int,int, int>[0];
 		
 		public Face(){}
-		public Face(int d, Tuple<int,int>[] mysides){
+		public Face(int d, Tuple<int,int,int>[] mysides){
 			this.data = d;
 			this.sides = mysides;
 		}
 		
-		public void Add(int v, int e){
-			this.Add(Tuple.Create(v,e));
+		public void Add(int v, int e, int f){
+			this.Add(Tuple.Create(v,e,f));
 		}
 		
-		public void Add(Tuple<int, int> ev){
-			Tuple<int,int>[] newsides = new Tuple<int, int>[sides.Length+1];
+		public void Add(Tuple<int, int, int> ev){
+			Tuple<int,int, int>[] newsides = new Tuple<int, int, int>[sides.Length+1];
 			sides.CopyTo(newsides,0);
 			newsides[sides.Length] = ev;
 			sides = newsides;
 			
 		}
 		
-		public Tuple<int,int> this[int index]{
+		public Tuple<int,int,int> this[int index]{
 			get{
 				return sides[index];
 			}
@@ -36,7 +36,7 @@ namespace polyhedraV3{
 		public int Count(){
 			return sides.Length;
 		}
-		public List<Tuple<int,int>> ToList{
+		public List<Tuple<int,int,int>> ToList{
 			get{
 				return sides.ToList();
 			}
@@ -58,21 +58,6 @@ namespace polyhedraV3{
 			}
 		}
 		
-		// public List<Tuple<int,int,int>> Triangles{
-			// get{
-				// List<Tuple<int,int,int>> tris = new List<Tuple<int,int,int>>();
-				// for(int v =1; v+1<this.Count();v++){
-					// tris.Add(Tuple.Create(
-						// this.Vertices[0],
-						// this.Vertices[v],
-						// this.Vertices[v+1]
-						// ));
-					
-				// }
-				// return tris;
-			// }
-		// }
-		
 		public F GetData<F,E,V>(FaceHedron<F,E,V> parent){
 			return parent.FaceData[this.data];
 		}
@@ -81,6 +66,20 @@ namespace polyhedraV3{
 		}
 		public List<V> GetVertices<F,E,V>(FaceHedron<F,E,V> parent){
 			return sides.Select(t=>parent.VertexData[t.Item1]).ToList();
+		}
+		
+		public E GetEdge<F,E,V>(int index, FaceHedron<F,E,V> parent){
+			return parent.EdgeData[sides[index].Item2];
+		}
+		public List<E> GetEdges<F,E,V>(FaceHedron<F,E,V> parent){
+			return sides.Select(t=>parent.EdgeData[t.Item2]).ToList();
+		}
+		
+		public F GetNeighbor<F,E,V>(int index, FaceHedron<F,E,V> parent){
+			return parent.FaceData[sides[index].Item3];
+		}
+		public List<F> GetNeighbors<F,E,V>(FaceHedron<F,E,V> parent){
+			return sides.Select(t=>parent.FaceData[t.Item3]).ToList();
 		}
 	}
 }

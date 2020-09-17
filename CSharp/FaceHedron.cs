@@ -38,12 +38,12 @@ namespace polyhedraV3{
 				
 				while(curr != edge){
 					seenedges.Add(curr);
-					face.Add(curr.B(),currIndex);
+					face.Add(curr.B(),currIndex, curr.reverse(eh).L());
 					
 					currIndex = curr.N();
 					curr = curr.next(eh);
 				}
-				face.Add(curr.B(),currIndex);
+				face.Add(curr.B(),currIndex, curr.reverse(eh).L());
 				
 				faces.Add(face);
 			}
